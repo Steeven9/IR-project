@@ -1,0 +1,20 @@
+# LaTeX
+*.log
+*.synctex.gz
+*.aux
+*.toc
+*.out
+
+# System
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# IDEs/env
+.vscode/
+.idea/
+.env
+
+# React
+node_modules/
+build/
