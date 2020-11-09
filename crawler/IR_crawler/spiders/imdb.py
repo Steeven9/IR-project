@@ -15,7 +15,11 @@ class ImdbSpider(scrapy.Spider):
             description = movie.css('.lister-item-content p:nth-child(4)::text').extract_first() or None
 
             if year is not None:
-                year = year[1:-1].strip()
+                parsedyear = year[1:5].strip()
+                if parsedyear.isdigit():
+                    year = parsedyear
+                else:
+                    year = None
 
             if genre is not None:
                 genre = genre.strip().split(', ')

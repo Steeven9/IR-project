@@ -23,3 +23,6 @@ build/
 
 # Scrapy output
 *_result.json
+
+# Solr binaries
+solr-*/
