@@ -14,7 +14,12 @@ desktop.ini
 .vscode/
 .idea/
 .env
+*.pyc
+__pycache__/
 
 # React
 node_modules/
 build/
+
+# Scrapy output
+*_result.json
