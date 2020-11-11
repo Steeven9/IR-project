@@ -21,5 +21,6 @@ __pycache__/
 node_modules/
 build/
 
-# Solr data
+# Solr
 solr_data/
+*.pid
