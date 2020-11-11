@@ -23,4 +23,5 @@ build/
 
 # Solr
 solr_data/
+solr-8.7.0/server/solr
 *.pid

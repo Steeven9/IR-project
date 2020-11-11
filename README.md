@@ -59,7 +59,7 @@ IR-project/solr-8.7.0$ bin/solr create -c movies
 ```
 
 ```console
-IR-project/solr-8.7.0$ bin/post -c movies ../data/*_result.json
+IR-project/solr-8.7.0$ bin/post -c movies ../data/*
 ```
 
 Go back to the root of the repo, start the webserver
