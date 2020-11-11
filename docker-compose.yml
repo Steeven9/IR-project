@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  solr:
+    container_name: ir-project_solr
+    image: solr
+    ports:
+      - "8983:8983"
+    volumes:
+      - ./solr_data:/var/solr # persistency
+      - ./data:/opt/solr/data # dataset
+    command: 
+      - solr-precreate
+      - movies
+  react:
+    container_name: ir-project_react
+    build: .
+    ports:
+      - "5000:5000"
+    links:
+      - solr
+    depends_on: 
+      - solr
+networks:
+  default:
+    name: ir-project

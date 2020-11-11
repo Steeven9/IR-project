@@ -21,8 +21,5 @@ __pycache__/
 node_modules/
 build/
 
-# Scrapy output
-*_result.json
-
-# Solr binaries
-solr-*/
+# Solr data
+solr_data/

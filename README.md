@@ -17,13 +17,26 @@ Then move into the crawler directory and run the desired spider(s):
 This will save all the data in JSON format in the file specified with the `-o` parameter.
 
 
-## Step 2: Indexing
+## Step 2: Indexing and browsing (the easy/prod way)
 
-Download Solr binaries from [here](https://lucene.apache.org/solr/downloads.html) and unzip it in the root of the repo.
+Use the included Docker image to create your collection and spin up the UI webserver:
+
+`cd ..`
+
+`docker-compose up -d`
+
+Then feed it the data that you crawled (must be in the data directory):
+
+`docker exec -it ir-project_solr post -c movies data/*`
+
+That's it. Head over to `localhost:5000` and start browsing!
+
+
+## Step 2x: Manually indexing and browsing (the hard/dev way)
 
 Start the Solr server:
 
-`cd ../solr-8.6.2`
+`cd ../solr-8.7.0`
 
 `bin/solr start`
 
@@ -31,10 +44,7 @@ Answer to the prompts to configure your Solr instance, then create and index the
 
 `bin/solr create -c movies`
 
-`bin/post -c movies ../crawler/*_result.json`
-
-
-## Step 3: Browsing
+`bin/post -c movies ../data/*_result.json`
 
 Go back to the root of the repo, start the webserver
 
@@ -47,9 +57,13 @@ and go to `localhost:3000` to use the search UI. It's that simple!
 
 ## Cleanup
 
-Kill the UI webserver, then delete the Solr collection:
+If you used Docker, simply shut down the containers with
 
-`cd solr-8.6.2/`
+`docker-compose down`
+
+Otherwise kill the UI webserver, then delete the Solr collection:
+
+`cd solr-8.7.0/`
 
 `bin/solr delete -c movies`
 
