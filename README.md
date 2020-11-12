@@ -2,7 +2,7 @@
 USI Information Retrieval final project #21 by Stefano Taillefert
 
 ## Step 1: Crawling (skip if you want to use the included data)
-First install scrapy (requires python, good luck if you're on windows):
+First install scrapy (requires Python, good luck if you're on Windows):
 
 ```console
 IR-project$ pip install scrapy
@@ -18,7 +18,9 @@ IR-project$ cd crawler
 IR-project/crawler$ scrapy crawl -o ../data/imdb_result.json imdb
 ```
 
-(more to come)
+```console
+IR-project/crawler$ scrapy crawl -o ../data/rottentomatoes_result.json rottentomatoes
+```
 
 This will save all the data in JSON format in the file specified with the `-o` parameter.
 
@@ -31,10 +33,11 @@ Use the included Docker image to create your collection and spin up the UI webse
 IR-project$ docker-compose up -d
 ```
 
-Then feed it the data that you crawled (must be in the data directory):
+Then feed it the data that you crawled (must be in the data directory and in 
+a [supported format](https://lucene.apache.org/solr/guide/6_6/post-tool.html)):
 
 ```console
-IR-project$ docker exec -it ir-project_solr post -c movies data/*
+IR-project$ docker exec ir-project_solr post -c movies data/*
 ```
 
 That's it. Head over to `localhost:5000` and start browsing!
@@ -42,7 +45,7 @@ That's it. Head over to `localhost:5000` and start browsing!
 
 ## Step 2x: Manually indexing and browsing (the hard/dev way)
 
-Start the Solr server:
+Start the Solr server (requires Java):
 
 ```console
 IR-project$ cd solr-8.7.0
