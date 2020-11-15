@@ -4,7 +4,6 @@ import { TextField, Typography } from "@material-ui/core";
 import Axios from "axios";
 import MaterialTable from "material-table";
 import React, { useState } from "react";
-import "./App.css";
 import useStyles from "./AppStyle";
 
 function App() {  
@@ -15,7 +14,6 @@ function App() {
 			title: "",
 			field: "image",
 			filtering: false,
-			emptyValue: "Unknown",
 			render: (rowData) => <img alt="Movie poster" src={rowData.img_url} style={{width: 50}}/>
 		},
 		{
@@ -66,7 +64,7 @@ function App() {
 		setIsLoading(true);
 		if (keyword) {
 		// &rows=2147483647 is a hack to retrieve more than 10 docs at a time
-			Axios.get("/solr/movies/select?q=title:*" + keyword + "*&rows=2147483647")
+			Axios.get("/solr/movies/select?q=*" + keyword + "*&rows=2147483647")
 				.then((res) => {
 					setTableData(res.data.response.docs);
 					setIsLoading(false);
@@ -89,7 +87,7 @@ function App() {
 			</div>
       
 			<form noValidate autoComplete="off" className={classes.margin20}>
-				<TextField fullWidth label="Search" variant="outlined" onChange={(e) => searchMovies(e.target.value)}/>
+				<TextField fullWidth label="Search by title, genre, year, ..." variant="outlined" onChange={(e) => searchMovies(e.target.value)}/>
 			</form>
 
 			<MaterialTable

@@ -58,7 +58,7 @@ IR-project/solr-8.7.0$ bin/solr start
 Then create and index the crawled collection:
 
 ```console
-IR-project/solr-8.7.0$ bin/solr create -c movies
+IR-project/solr-8.7.0$ bin/solr create -c movies -d movies
 ```
 
 ```console
