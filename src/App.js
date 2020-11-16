@@ -48,11 +48,16 @@ function App() {
 			field: "description",
 			filterPlaceholder: "Description",
 			emptyValue: "Unknown"
+		},
+		{
+			title: "Origin",
+			field: "origin",
+			filterPlaceholder: "Origin",
+			emptyValue: "Unknown"
 		}
 	];
 
 	const options = {
-		doubleHorizontalScroll: true,
 		filtering: true,
 		toolbar: false,
 		emptyRowsWhenPaging: false,

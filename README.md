@@ -22,6 +22,10 @@ IR-project/crawler$ scrapy crawl -o ../data/imdb_result.json imdb
 IR-project/crawler$ scrapy crawl -o ../data/rottentomatoes_result.json rottentomatoes
 ```
 
+```console
+IR-project/crawler$ scrapy crawl -o ../data/allmovie_result.json allmovie
+```
+
 This will save all the data in JSON format in the file specified with the `-o` parameter.
 
 
@@ -34,7 +38,7 @@ IR-project$ docker-compose up -d
 ```
 
 Then feed it the data that you crawled (must be in the data directory and in 
-a [supported format](https://lucene.apache.org/solr/guide/6_6/post-tool.html)):
+a [supported format](https://lucene.apache.org/solr/guide/8_7/post-tool.html)):
 
 ```console
 IR-project$ docker exec ir-project_solr post -c movies data/*

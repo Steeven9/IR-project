@@ -38,7 +38,7 @@
     catchall "text" field, and use that for searching.
 -->
 
-<schema name="default-config" version="1.6">
+<schema name="movies" version="1.6">
     <!-- Valid attributes for fields:
      name: mandatory - the name for the field
      type: mandatory - the name of a field type from the 
@@ -83,6 +83,7 @@
     <field name="img_url" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="genre" type="string" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="description" type="string" indexed="true" stored="true" required="false" multiValued="false" />
+    <field name="origin" type="string" indexed="true" stored="true" required="true" multiValued="false" />
 
     <!-- General search stuff -->
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>
