@@ -16,7 +16,14 @@ function App() {
 			field: "image",
 			filtering: false,
 			width: "auto",
-			render: (rowData) => <img alt="Movie poster" src={rowData.img_url} style={{width: 50}}/>
+			render: (rowData) => {
+				return (
+					<img 
+						alt="Movie poster" 
+						src={rowData.img_url ? rowData.img_url : "images/lazy.gif"} 
+						style={{width: 50}}
+					/>);
+			}
 		},
 		{
 			title: "Title",
