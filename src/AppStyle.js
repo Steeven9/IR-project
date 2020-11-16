@@ -7,6 +7,9 @@ const useStyles = makeStyles({
 	},
 	margin20: {
 		margin: "20px"
+	},
+	marginVert20: {
+		margin: "20px 0"
 	}
 });
 

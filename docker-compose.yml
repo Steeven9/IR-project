@@ -8,9 +8,11 @@ services:
     volumes:
       - ./solr_data:/var/solr # persistency
       - ./data:/opt/solr/data # dataset
+      - ./solr-8.7.0/server/solr/configsets/movies:/configset # config
     command: 
       - solr-precreate
       - movies
+      - /configset
   react:
     container_name: ir-project_react
     build: .
