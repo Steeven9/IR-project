@@ -15,7 +15,7 @@ class ImdbSpider(scrapy.Spider):
             description = movie.css('.lister-item-content p:nth-child(4)::text').extract_first() or None
 
             if year is not None:
-                parsedyear = year[1:4].strip()
+                parsedyear = year[1:5].strip()
                 if parsedyear.isdigit():
                     year = parsedyear
                 else:
@@ -31,7 +31,7 @@ class ImdbSpider(scrapy.Spider):
                 'title': movie.css('.lister-item-header a::text').extract_first(),
                 'rating': movie.css('.ratings-imdb-rating strong::text').extract_first(),
                 'year': year,
-                'img_url': movie.css('.lister-item-image a img::attr(currentSrc)').extract_first(),
+                'img_url': movie.css('.lister-item-image a img::attr(src)').extract_first(),
                 'genre': genre,
                 'description': description,
                 'origin': 'imdb'
