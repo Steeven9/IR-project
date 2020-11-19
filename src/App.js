@@ -1,6 +1,7 @@
 /* eslint-disable jsx-a11y/no-distracting-elements */
 /* eslint-disable react/display-name */
-import { Snackbar, TextField, Typography } from "@material-ui/core";
+import { Button, Snackbar, TextField, Typography } from "@material-ui/core";
+import { Search } from "@material-ui/icons";
 import Alert from "@material-ui/lab/Alert";
 import Axios from "axios";
 import MaterialTable from "material-table";
@@ -66,27 +67,34 @@ function App() {
 
 	const options = {
 		filtering: true,
-		toolbar: false,
 		emptyRowsWhenPaging: false,
-		pageSize: 10
+		paging: false
 	};
 	
 	// Table data and state
 	let [tableData, setTableData] = useState([]);
 	let [isLoading, setIsLoading] = useState(false);
+	let [index, setIndex] = useState(0);
+	let [totalResults, setTotalResults] = useState(0);
+	let [keyword, setKeyword] = useState("");
+	const NUM_PER_PAGE = 10;
 
 	// Error snackbar at the bottom
 	let [showAlert, setShowAlert] = useState(false);
 	let [alertText, setAlertText] = useState("");
   
-	const searchMovies = (keyword) => {
+	const searchMovies = (i) => {
 		setIsLoading(true);
-		if (keyword) {
-			// &rows=2147483647 is a hack to retrieve more than 10 docs at a time
-			Axios.get("/solr/movies/select?q=*" + keyword + "*&rows=2147483647")
+		if (keyword.length === 0) {
+			setTableData([]);
+			setIsLoading(false);
+		} else if (i >= 0) {
+			Axios.get("/solr/movies/select?q=*" + keyword + "*&sort=title%20asc&start=" + (NUM_PER_PAGE * i))
 				.then((res) => {
 					setTableData(res.data.response.docs);
+					setTotalResults(res.data.response.numFound);
 					setIsLoading(false);
+					setIndex(i);
 				})
 				.catch((e) => {
 					console.error(e);
@@ -94,9 +102,6 @@ function App() {
 					setAlertText(e.message);
 					setShowAlert(true);
 				});
-		} else {
-			setTableData([]);
-			setIsLoading(false);
 		}
 	};
 
@@ -107,8 +112,21 @@ function App() {
 				<marquee scrolldelay="10" truespeed="true" behavior="slide"><Typography variant="h1" color="primary">IR project - movie search</Typography></marquee>
 			</div>
       
-			<form noValidate autoComplete="off" className={classes.marginVert20}>
-				<TextField fullWidth label="Search by title, genre, year, ..." variant="outlined" onChange={(e) => searchMovies(e.target.value)}/>
+			<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(0);}}>
+				<TextField 
+					fullWidth 
+					label="Search by title, genre, year, ..." 
+					variant="outlined" 
+					onChange={(e) => {setKeyword(e.target.value);}}
+				/>
+				<Button 
+					variant="contained" 
+					color="primary"
+					className={classes.margin20}
+					onClick={() => {searchMovies(index);}}
+				>
+					Search <Search />
+				</Button>
 			</form>
 
 			<MaterialTable
@@ -116,6 +134,32 @@ function App() {
 				isLoading={isLoading}
 				options={options}
 				data={tableData}
+				components={{
+					Toolbar: () => (
+						<div className={classes.spacedButtons}>
+							<Button 
+								variant="contained" 
+								color="primary"
+								disabled={index === 0}
+								className={classes.margin20}
+								onClick={() => {searchMovies(index - 1);}}
+							>
+								Prev
+							</Button>
+							<Typography className={classes.margin20}>
+								{totalResults === 0 ? "" : (<>Page {index + 1} of {Math.ceil(totalResults / NUM_PER_PAGE)}</>)}
+							</Typography>
+							<Button 
+								variant="contained" 
+								color="primary"
+								className={classes.margin20}
+								onClick={() => {searchMovies(index + 1);}}
+							>
+								Next
+							</Button>
+						</div>
+					)
+				}}
 			/>
 
 			<Snackbar

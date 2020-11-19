@@ -28,7 +28,7 @@ class ImdbSpider(scrapy.Spider):
                 description = description.strip()
 
             yield {
-                'title': movie.css('.lister-item-header a::text').extract_first(),
+                'title': movie.css('.lister-item-header a::text').extract_first().strip(),
                 'rating': movie.css('.ratings-imdb-rating strong::text').extract_first(),
                 'year': year,
                 'img_url': movie.css('.lister-item-image a img::attr(src)').extract_first(),

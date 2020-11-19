@@ -10,6 +10,10 @@ const useStyles = makeStyles({
 	},
 	marginVert20: {
 		margin: "20px 0"
+	},
+	spacedButtons: {
+		display: "flex",
+		justifyContent: "space-between"
 	}
 });
 
