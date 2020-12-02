@@ -1,4 +1,4 @@
-version: '3.7'
+version: '3.8'
 services:
   solr:
     container_name: ir-project_solr
@@ -16,8 +16,11 @@ services:
   react:
     container_name: ir-project_react
     build: .
+    tty: true
     ports:
-      - "5000:5000"
+      - "3000:3000"
+    environment:
+      - REACT_APP_SOLR_HOSTNAME=ir-project_solr
     links:
       - solr
     depends_on: 

@@ -37,14 +37,14 @@ Use the included Docker image to create your collection and spin up the UI webse
 IR-project$ docker-compose up -d
 ```
 
-Then feed it the data that you crawled (must be in the data directory and in 
+Then feed it the data that you crawled (must be in the `data` directory and in 
 a [supported format](https://lucene.apache.org/solr/guide/8_7/post-tool.html)):
 
 ```console
 IR-project$ docker exec ir-project_solr post -c movies data/*
 ```
 
-That's it. Head over to `localhost:5000` and start browsing!
+That's it. Head over to `localhost:3000` and start browsing!
 
 
 ## Step 2x: Manually indexing and browsing (the hard/dev way)
@@ -52,28 +52,20 @@ That's it. Head over to `localhost:5000` and start browsing!
 Start the Solr server (requires Java):
 
 ```console
-IR-project$ cd solr-8.7.0
-```
-
-```console
-IR-project/solr-8.7.0$ bin/solr start
+IR-project/solr-8.7.0$ solr-8.7.0/bin/solr start
 ```
 
 Then create and index the crawled collection:
 
 ```console
-IR-project/solr-8.7.0$ bin/solr create -c movies -d movies
+IR-project/solr-8.7.0$ solr-8.7.0/bin/solr create -c movies -d movies
 ```
 
 ```console
-IR-project/solr-8.7.0$ bin/post -c movies ../data/*
+IR-project/solr-8.7.0$ solr-8.7.0/bin/post -c movies ../data/*
 ```
 
-Go back to the root of the repo, start the webserver
-
-```console
-IR-project/solr-8.7.0$ cd ..
-```
+Then start the webserver:
 
 ```console
 IR-project$ yarn start
@@ -93,15 +85,11 @@ IR-project$ docker-compose down
 Otherwise kill the UI webserver, then delete the Solr collection:
 
 ```console
-IR-project$ cd solr-8.7.0
-```
-
-```console
-IR-project/solr-8.7.0$ bin/solr delete -c movies
+IR-project/solr-8.7.0$ solr-8.7.0/bin/solr delete -c movies
 ```
 
 Stop Solr:
 
 ```console
-IR-project/solr-8.7.0$ bin/solr stop -all
+IR-project/solr-8.7.0$ solr-8.7.0/bin/solr stop -all
 ```
