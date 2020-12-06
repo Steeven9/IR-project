@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-distracting-elements */
 /* eslint-disable react/display-name */
-import { AppBar, Box, Button, Snackbar, Tab, Tabs, TextField, Typography } from "@material-ui/core";
+import { Button, Snackbar, Tab, Tabs, TextField, Typography } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import Alert from "@material-ui/lab/Alert";
 import Axios from "axios";
@@ -83,44 +83,10 @@ function App() {
 	let [showAlert, setShowAlert] = useState(false);
 	let [alertText, setAlertText] = useState("");
 
-	// Tabs stuff
-	function TabPanel(props) {
-		const { children, value, index, ...other } = props;
-	
-		return (
-			<div
-				role="tabpanel"
-				hidden={value !== index}
-				id={`simple-tabpanel-${index}`}
-				aria-labelledby={`simple-tab-${index}`}
-				{...other}
-			>
-				{value === index && (
-					<Box p={3}>
-						{children}
-					</Box>
-				)}
-			</div>
-		);
-	}
-
-	function a11yProps(i) {
-		return {
-			id: `simple-tab-${i}`,
-			"aria-controls": `simple-tabpanel-${i}`,
-		};
-	}
-
-	const [value, setValue] = useState(0);
-	//const [genreIndex, setGenreIndex] = useState(0);
-	const handleChange = (event, newValue) => {
-		setValue(newValue);
-	};
-
 	// Fetch request to retrieve results
 	const searchMovies = (pageNumber, genre) => {
 		setIsLoading(true);
-		let genreQuery = genre ? "&genre=*" + genre : "*";
+		let genreQuery = genre ? "&genre=*" + genre + "*" : "";
 
 		if (keyword.length === 0) {
 			setTableData([]);
@@ -142,6 +108,11 @@ function App() {
 		}
 	};
 
+	const [value, setValue] = useState(0);
+	const handleChange = (event, newValue) => {
+		setValue(newValue);
+	};
+
 	return (
 		<div className={classes.margin20}>
 			<div className={classes.dispFlex}>
@@ -149,67 +120,71 @@ function App() {
 				<marquee scrolldelay="10" truespeed="true" behavior="slide"><Typography variant="h1" color="primary">IR project - movie search</Typography></marquee>
 			</div>
 
-			<AppBar position="static">
-				<Tabs value={value} onChange={handleChange}>
-					<Tab label="Search" {...a11yProps(0)} />
-					<Tab label="Browse" {...a11yProps(1)} />
-				</Tabs>
-			</AppBar>
+			<Tabs
+				value={value}
+				indicatorColor="primary"
+				textColor="primary"
+				onChange={handleChange}
+			>
+				<Tab label="Search" />
+				<Tab label="Browse" />
+			</Tabs>
 
-			<TabPanel value={value} index={0}>
-				<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(0);}}>
-					<TextField 
-						fullWidth 
-						label="Search by title, genre, year, ..." 
-						variant="outlined" 
-						onChange={(e) => {setKeyword(e.target.value);}}
+			{ value === 0 ? (
+				<>
+					<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(0);}}>
+						<TextField 
+							fullWidth 
+							label="Search by title, genre, year, ..." 
+							variant="outlined" 
+							onChange={(e) => {setKeyword(e.target.value);}}
+						/>
+						<Button 
+							variant="contained" 
+							color="primary"
+							className={classes.margin20}
+							onClick={() => {searchMovies(index);}}
+						>
+						Search <Search />
+						</Button>
+					</form>
+
+					<MaterialTable
+						columns={columns}				
+						isLoading={isLoading}
+						options={options}
+						data={tableData}
+						components={{
+							Toolbar: () => (
+								<div className={classes.spacedButtons}>
+									<Button 
+										variant="contained" 
+										color="primary"
+										disabled={index === 0}
+										className={classes.margin20}
+										onClick={() => {searchMovies(index - 1);}}
+									>
+									Prev
+									</Button>
+									<Typography className={classes.margin20}>
+										{totalResults === 0 ? "" : (<>Page {index + 1} of {Math.ceil(totalResults / NUM_PER_PAGE)}</>)}
+									</Typography>
+									<Button 
+										variant="contained" 
+										color="primary"
+										className={classes.margin20}
+										onClick={() => {searchMovies(index + 1);}}
+									>
+									Next
+									</Button>
+								</div>
+							)
+						}}
 					/>
-					<Button 
-						variant="contained" 
-						color="primary"
-						className={classes.margin20}
-						onClick={() => {searchMovies(index);}}
-					>
-					Search <Search />
-					</Button>
-				</form>
-
-				<MaterialTable
-					columns={columns}				
-					isLoading={isLoading}
-					options={options}
-					data={tableData}
-					components={{
-						Toolbar: () => (
-							<div className={classes.spacedButtons}>
-								<Button 
-									variant="contained" 
-									color="primary"
-									disabled={index === 0}
-									className={classes.margin20}
-									onClick={() => {searchMovies(index - 1);}}
-								>
-								Prev
-								</Button>
-								<Typography className={classes.margin20}>
-									{totalResults === 0 ? "" : (<>Page {index + 1} of {Math.ceil(totalResults / NUM_PER_PAGE)}</>)}
-								</Typography>
-								<Button 
-									variant="contained" 
-									color="primary"
-									className={classes.margin20}
-									onClick={() => {searchMovies(index + 1);}}
-								>
-								Next
-								</Button>
-							</div>
-						)
-					}}
-				/>
-			</TabPanel>
-			<TabPanel value={value} index={1}>
-				Work in progress
-			</TabPanel>
+				</>
+			) : (
+				<Typography variant="h3" className={classes.margin20}>Work in progress</Typography>
+			) }			
 
 			<Snackbar
 				open={showAlert}

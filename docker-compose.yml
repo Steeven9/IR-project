@@ -15,7 +15,7 @@ services:
       - /configset
   react:
     container_name: ir-project_react
-    build: .
+    image: steeven9/ir-project
     tty: true
     ports:
       - "3000:3000"
