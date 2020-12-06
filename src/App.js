@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-distracting-elements */
 /* eslint-disable react/display-name */
-import { Button, Snackbar, TextField, Typography } from "@material-ui/core";
+import { AppBar, Box, Button, Snackbar, Tab, Tabs, TextField, Typography } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import Alert from "@material-ui/lab/Alert";
 import Axios from "axios";
@@ -82,19 +82,56 @@ function App() {
 	// Error snackbar at the bottom
 	let [showAlert, setShowAlert] = useState(false);
 	let [alertText, setAlertText] = useState("");
-  
-	const searchMovies = (i) => {
+
+	// Tabs stuff
+	function TabPanel(props) {
+		const { children, value, index, ...other } = props;
+	
+		return (
+			<div
+				role="tabpanel"
+				hidden={value !== index}
+				id={`simple-tabpanel-${index}`}
+				aria-labelledby={`simple-tab-${index}`}
+				{...other}
+			>
+				{value === index && (
+					<Box p={3}>
+						{children}
+					</Box>
+				)}
+			</div>
+		);
+	}
+
+	function a11yProps(i) {
+		return {
+			id: `simple-tab-${i}`,
+			"aria-controls": `simple-tabpanel-${i}`,
+		};
+	}
+
+	const [value, setValue] = useState(0);
+	//const [genreIndex, setGenreIndex] = useState(0);
+	const handleChange = (event, newValue) => {
+		setValue(newValue);
+	};
+
+	// Fetch request to retrieve results
+	const searchMovies = (pageNumber, genre) => {
 		setIsLoading(true);
+		let genreQuery = genre ? "&genre=*" + genre : "*";
+
 		if (keyword.length === 0) {
 			setTableData([]);
 			setIsLoading(false);
-		} else if (i >= 0) {
-			Axios.get("/solr/movies/select?q=*" + keyword + "*&sort=title%20asc&start=" + (NUM_PER_PAGE * i))
+		} else if (pageNumber >= 0) {
+			Axios.get("/solr/movies/select?q=*" + keyword + "*&sort=title%20asc&start=" + (NUM_PER_PAGE * pageNumber) + genreQuery)
 				.then((res) => {
 					setTableData(res.data.response.docs);
 					setTotalResults(res.data.response.numFound);
 					setIsLoading(false);
-					setIndex(i);
+					setIndex(pageNumber);
 				})
 				.catch((e) => {
 					console.error(e);
@@ -111,56 +148,68 @@ function App() {
 				<marquee scrolldelay="100" behavior="slide" direction="down" style={{width:"auto"}}><img alt="Logo" src="logo192.png"/></marquee>
 				<marquee scrolldelay="10" truespeed="true" behavior="slide"><Typography variant="h1" color="primary">IR project - movie search</Typography></marquee>
 			</div>
-      
-			<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(0);}}>
-				<TextField 
-					fullWidth 
-					label="Search by title, genre, year, ..." 
-					variant="outlined" 
-					onChange={(e) => {setKeyword(e.target.value);}}
-				/>
-				<Button 
-					variant="contained" 
-					color="primary"
-					className={classes.margin20}
-					onClick={() => {searchMovies(index);}}
-				>
-					Search <Search />
-				</Button>
-			</form>
 
-			<MaterialTable
-				columns={columns}				
-				isLoading={isLoading}
-				options={options}
-				data={tableData}
-				components={{
-					Toolbar: () => (
-						<div className={classes.spacedButtons}>
-							<Button 
-								variant="contained" 
-								color="primary"
-								disabled={index === 0}
-								className={classes.margin20}
-								onClick={() => {searchMovies(index - 1);}}
-							>
+			<AppBar position="static">
+				<Tabs value={value} onChange={handleChange}>
+					<Tab label="Search" {...a11yProps(0)} />
+					<Tab label="Browse" {...a11yProps(1)} />
+				</Tabs>
+			</AppBar>
+
+			<TabPanel value={value} index={0}>
+				<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(0);}}>
+					<TextField 
+						fullWidth 
+						label="Search by title, genre, year, ..." 
+						variant="outlined" 
+						onChange={(e) => {setKeyword(e.target.value);}}
+					/>
+					<Button 
+						variant="contained" 
+						color="primary"
+						className={classes.margin20}
+						onClick={() => {searchMovies(index);}}
+					>
+					Search <Search />
+					</Button>
+				</form>
+
+				<MaterialTable
+					columns={columns}				
+					isLoading={isLoading}
+					options={options}
+					data={tableData}
+					components={{
+						Toolbar: () => (
+							<div className={classes.spacedButtons}>
+								<Button 
+									variant="contained" 
+									color="primary"
+									disabled={index === 0}
+									className={classes.margin20}
+									onClick={() => {searchMovies(index - 1);}}
+								>
 								Prev
-							</Button>
-							<Typography className={classes.margin20}>
-								{totalResults === 0 ? "" : (<>Page {index + 1} of {Math.ceil(totalResults / NUM_PER_PAGE)}</>)}
-							</Typography>
-							<Button 
-								variant="contained" 
-								color="primary"
-								className={classes.margin20}
-								onClick={() => {searchMovies(index + 1);}}
-							>
+								</Button>
+								<Typography className={classes.margin20}>
+									{totalResults === 0 ? "" : (<>Page {index + 1} of {Math.ceil(totalResults / NUM_PER_PAGE)}</>)}
+								</Typography>
+								<Button 
+									variant="contained" 
+									color="primary"
+									className={classes.margin20}
+									onClick={() => {searchMovies(index + 1);}}
+								>
 								Next
-							</Button>
-						</div>
-					)
-				}}
-			/>
+								</Button>
+							</div>
+						)
+					}}
+				/>
+			</TabPanel>
+			<TabPanel value={value} index={1}>
+				Work in progress
+			</TabPanel>
 
 			<Snackbar
 				open={showAlert}
