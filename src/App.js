@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-distracting-elements */
 /* eslint-disable react/display-name */
-import { Button, Snackbar, Tab, Tabs, TextField, Typography } from "@material-ui/core";
+import { Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Tab, Tabs, TextField, Typography } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import Alert from "@material-ui/lab/Alert";
 import Axios from "axios";
@@ -79,20 +79,51 @@ function App() {
 	let [keyword, setKeyword] = useState("");
 	const NUM_PER_PAGE = 10;
 
+	// Genre selection and list
+	let [genres, setGenres] = useState([]);
+	let [selectedGenre, setSelectedGenre] = useState(0);
+
+	const handleGenreChange = (newGenre) => {
+		setSelectedGenre(newGenre);
+		searchMovies("", 0, newGenre);
+	};
+
 	// Error snackbar at the bottom
 	let [showAlert, setShowAlert] = useState(false);
 	let [alertText, setAlertText] = useState("");
 
-	// Fetch request to retrieve results
-	const searchMovies = (pageNumber, genre) => {
-		setIsLoading(true);
-		let genreQuery = genre ? "&genre=*" + genre + "*" : "";
+	// Tabs index
+	const [selectedTab, setselectedTab] = useState(0);
+	const handleTabChange = (event, newValue) => {
+		setselectedTab(newValue);
+		setSelectedGenre(0);
+		setTableData([]);
+		getGenres();
+		setIndex(0);
+		setTotalResults(0);
+	};
 
-		if (keyword.length === 0) {
+	// Fetch request to retrieve genres list
+	const getGenres = () => Axios.get("/solr/movies/genres")
+		.then((res) => {
+			setGenres(res.data.facet_counts.facet_fields.genre.filter((el) => el !== 0));
+		})
+		.catch((e) => {
+			console.error(e);
+			setAlertText(e.message);
+			setShowAlert(true);
+		});	
+
+	// Fetch request to retrieve results
+	const searchMovies = (key, pageNumber, genre) => {
+		setIsLoading(true);
+		let query = genre !== 0 ? "genre:" + genre : "*" + key + "*";
+
+		if (key.length === 0 && !genre) {
 			setTableData([]);
 			setIsLoading(false);
 		} else if (pageNumber >= 0) {
-			Axios.get("/solr/movies/select?q=*" + keyword + "*&sort=title%20asc&start=" + (NUM_PER_PAGE * pageNumber) + genreQuery)
+			Axios.get("/solr/movies/select?q=" + query + "&sort=title%20asc&start=" + (NUM_PER_PAGE * pageNumber))
 				.then((res) => {
 					setTableData(res.data.response.docs);
 					setTotalResults(res.data.response.numFound);
@@ -108,11 +139,6 @@ function App() {
 		}
 	};
 
-	const [value, setValue] = useState(0);
-	const handleChange = (event, newValue) => {
-		setValue(newValue);
-	};
-
 	return (
 		<div className={classes.margin20}>
 			<div className={classes.dispFlex}>
@@ -121,70 +147,79 @@ function App() {
 			</div>
 
 			<Tabs
-				value={value}
+				value={selectedTab}
 				indicatorColor="primary"
 				textColor="primary"
-				onChange={handleChange}
+				onChange={handleTabChange}
 			>
 				<Tab label="Search" />
 				<Tab label="Browse" />
 			</Tabs>
 
-			{ value === 0 ? (
-				<>
-					<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(0);}}>
-						<TextField 
-							fullWidth 
-							label="Search by title, genre, year, ..." 
-							variant="outlined" 
-							onChange={(e) => {setKeyword(e.target.value);}}
-						/>
-						<Button 
-							variant="contained" 
-							color="primary"
-							className={classes.margin20}
-							onClick={() => {searchMovies(index);}}
-						>
-						Search <Search />
-						</Button>
-					</form>
-
-					<MaterialTable
-						columns={columns}				
-						isLoading={isLoading}
-						options={options}
-						data={tableData}
-						components={{
-							Toolbar: () => (
-								<div className={classes.spacedButtons}>
-									<Button 
-										variant="contained" 
-										color="primary"
-										disabled={index === 0}
-										className={classes.margin20}
-										onClick={() => {searchMovies(index - 1);}}
-									>
-									Prev
-									</Button>
-									<Typography className={classes.margin20}>
-										{totalResults === 0 ? "" : (<>Page {index + 1} of {Math.ceil(totalResults / NUM_PER_PAGE)}</>)}
-									</Typography>
-									<Button 
-										variant="contained" 
-										color="primary"
-										className={classes.margin20}
-										onClick={() => {searchMovies(index + 1);}}
-									>
-									Next
-									</Button>
-								</div>
-							)
-						}}
+			{ selectedTab === 0 ? (
+				<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(keyword, 0, 0);}}>
+					<TextField 
+						fullWidth 
+						label="Search by title, genre, year, ..." 
+						variant="outlined" 
+						onChange={(e) => {setKeyword(e.target.value);}}
 					/>
-				</>
+					<Button 
+						variant="contained" 
+						color="primary"
+						className={classes.margin20}
+						onClick={() => {searchMovies(keyword, index, 0);}}
+					>
+						Search <Search />
+					</Button>
+				</form>
 			) : (
-				<Typography variant="h3" className={classes.margin20}>Work in progress</Typography>
-			) }			
+				<FormControl className={classes.margin20}>
+					<InputLabel>Genre</InputLabel>
+					<Select
+						value={selectedGenre}
+						autoWidth
+						onChange={(e) => handleGenreChange(e.target.value)}
+					>
+						<MenuItem value="0">Choose...</MenuItem>
+						{genres ? genres.map((el) => <MenuItem key={el} value={el}>{el}</MenuItem>) : null}
+					</Select>
+				</FormControl>
+			)}
+
+			<MaterialTable
+				columns={columns}				
+				isLoading={isLoading}
+				options={options}
+				data={tableData}
+				components={{
+					Toolbar: () => (
+						<div className={classes.spacedButtons}>
+							<Button 
+								variant="contained" 
+								color="primary"
+								disabled={index === 0}
+								className={classes.margin20}
+								onClick={() => {searchMovies(keyword, index - 1, selectedGenre);}}
+							>
+									Prev
+							</Button>
+							<Typography className={classes.margin20}>
+								{totalResults === 0 ? "" : (<>Page {index + 1} of {Math.ceil(totalResults / NUM_PER_PAGE)}</>)}
+							</Typography>
+							<Button 
+								variant="contained" 
+								color="primary"
+								disabled={index === Math.ceil(totalResults / NUM_PER_PAGE) - 1}
+								className={classes.margin20}
+								onClick={() => {searchMovies(keyword, index + 1, selectedGenre);}}
+							>
+									Next
+							</Button>
+						</div>
+					)
+				}}
+			/>		
 
 			<Snackbar
 				open={showAlert}
