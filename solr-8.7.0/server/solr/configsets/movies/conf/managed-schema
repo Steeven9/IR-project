@@ -83,7 +83,7 @@
     <field name="img_url" type="string" indexed="true" stored="true" required="false" multiValued="false" />
     <field name="genre" type="string" indexed="true" stored="true" required="false" multiValued="true" />
     <field name="description" type="string" indexed="true" stored="true" required="false" multiValued="false" />
-    <field name="origin" type="string" indexed="true" stored="true" required="true" multiValued="false" />
+    <field name="link" type="string" indexed="true" stored="true" required="true" multiValued="false" />
 
     <!-- General search stuff -->
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="true"/>

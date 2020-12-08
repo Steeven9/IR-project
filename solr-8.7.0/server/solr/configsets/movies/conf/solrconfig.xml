@@ -185,7 +185,7 @@
     </lst>
   </requestHandler>
 
-  <initParams path="/update/**,/query,/select,/clustering">
+  <initParams path="/update/**,/query,/select">
     <lst name="defaults">
       <str name="df">_text_</str>
     </lst>
