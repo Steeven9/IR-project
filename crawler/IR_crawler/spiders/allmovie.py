@@ -29,7 +29,7 @@ class AllmovieSpider(scrapy.Spider):
                 'img_url': movie.css('.cropped-image img::attr(src)').extract_first(),
                 'genre': parsed_genres,
                 'description': None,
-                'origin': 'allmovie'
+                'link': 'https://www.allmovie.com' + movie.css('.title a::attr(href)').extract_first()
             }
 
         next_page = response.css('.next a::attr(href)').get()

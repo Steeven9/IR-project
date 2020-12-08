@@ -34,7 +34,7 @@ class ImdbSpider(scrapy.Spider):
                 'img_url': movie.css('.lister-item-image a img::attr(src)').extract_first(),
                 'genre': genre,
                 'description': description,
-                'origin': 'imdb'
+                'link': 'https://www.imdb.com' + movie.css('.lister-item-header a::attr(href)').extract_first()
             }
 
         next_page = response.css('.next-page::attr(href)').get()

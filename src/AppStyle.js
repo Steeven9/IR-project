@@ -1,4 +1,5 @@
 import { makeStyles } from "@material-ui/core";
+import theme from "./AppTheme";
 
 const useStyles = makeStyles({
 	dispFlex: {
@@ -14,6 +15,9 @@ const useStyles = makeStyles({
 	spacedButtons: {
 		display: "flex",
 		justifyContent: "space-between"
+	},
+	link: {
+		color: theme.palette.primary.main
 	}
 });
 

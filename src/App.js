@@ -20,7 +20,7 @@ function App() {
 			render: (rowData) => {
 				return (
 					<img 
-						alt="Movie poster" 
+						alt={rowData.title + " poster"}
 						src={rowData.img_url ? rowData.img_url : "images/lazy.gif"} 
 						style={{width: 50}}
 					/>);
@@ -55,13 +55,14 @@ function App() {
 			title: "Description",
 			field: "description",
 			filterPlaceholder: "Description",
-			emptyValue: "Unknown"
+			emptyValue: "Not available"
 		},
 		{
-			title: "Origin",
-			field: "origin",
-			filterPlaceholder: "Origin",
-			emptyValue: "Unknown"
+			title: "Link",
+			field: "link",
+			filtering: false,
+			emptyValue: "Unknown",
+			render: (rowData) => <a className={classes.link} href={rowData.origin} rel="noopener noreferrer">{rowData.origin}</a>
 		}
 	];
 
@@ -122,6 +123,8 @@ function App() {
 		if (key.length === 0 && !genre) {
 			setTableData([]);
 			setIsLoading(false);
+			setIndex(0);
+			setTotalResults(0);
 		} else if (pageNumber >= 0) {
 			Axios.get("/solr/movies/select?q=" + query + "&sort=title%20asc&start=" + (NUM_PER_PAGE * pageNumber))
 				.then((res) => {
@@ -210,7 +213,7 @@ function App() {
 							<Button 
 								variant="contained" 
 								color="primary"
-								disabled={index === Math.ceil(totalResults / NUM_PER_PAGE) - 1}
+								disabled={index >= Math.ceil(totalResults / NUM_PER_PAGE) - 1}
 								className={classes.margin20}
 								onClick={() => {searchMovies(keyword, index + 1, selectedGenre);}}
 							>

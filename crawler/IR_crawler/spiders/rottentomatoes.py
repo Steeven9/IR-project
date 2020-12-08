@@ -35,7 +35,7 @@ class RottentomatoesSpider(scrapy.Spider):
                 'img_url': movie.css('.poster::attr(src)').extract_first(),
                 'genre': genre,
                 'description': description,
-                'origin': 'rottentomatoes'
+                'link': 'https://www.rottentomatoes.com' + movie.css('.movie_info a::attr(href)').extract_first()
             }
 
         next_page = response.css('.next-page::attr(href)').get()
