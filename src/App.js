@@ -62,7 +62,7 @@ function App() {
 			field: "link",
 			filtering: false,
 			emptyValue: "Unknown",
-			render: (rowData) => <a className={classes.link} href={rowData.origin} rel="noopener noreferrer">{rowData.origin}</a>
+			render: (rowData) => <a className={classes.link} href={rowData.link} rel="noopener noreferrer">{rowData.link}</a>
 		}
 	];
 
@@ -205,11 +205,22 @@ function App() {
 								className={classes.margin20}
 								onClick={() => {searchMovies(keyword, index - 1, selectedGenre);}}
 							>
-									Prev
+								Prev
 							</Button>
-							<Typography className={classes.margin20}>
-								{totalResults === 0 ? "" : (<>Page {index + 1} of {Math.ceil(totalResults / NUM_PER_PAGE)}</>)}
-							</Typography>
+
+							<div className={classes.margin20 + " " + classes.spacedButtons}>
+								{totalResults === 0 ? "" : (<>
+									<Typography>Page </Typography>
+									<TextField 
+										value={index + 1} 
+										inputProps={{style: { textAlign: "center" }}}
+										className={classes.marginSide20} 
+										onChange={(e) => {searchMovies(keyword, e.target.value - 1, selectedGenre);}}
+									/> 
+									<Typography> of {Math.ceil(totalResults / NUM_PER_PAGE)}</Typography>
+								</>)}
+							</div>
+							
 							<Button 
 								variant="contained" 
 								color="primary"
@@ -217,7 +228,7 @@ function App() {
 								className={classes.margin20}
 								onClick={() => {searchMovies(keyword, index + 1, selectedGenre);}}
 							>
-									Next
+								Next
 							</Button>
 						</div>
 					)
