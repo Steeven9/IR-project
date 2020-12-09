@@ -1,11 +1,11 @@
 /* eslint-disable jsx-a11y/no-distracting-elements */
 /* eslint-disable react/display-name */
-import { Button, FormControl, InputLabel, MenuItem, Select, Snackbar, Tab, Tabs, TextField, Typography } from "@material-ui/core";
+import { Button, FormControl, InputLabel, MenuItem, Select, Snackbar, TextField, Typography } from "@material-ui/core";
 import { Search } from "@material-ui/icons";
 import Alert from "@material-ui/lab/Alert";
 import Axios from "axios";
 import MaterialTable from "material-table";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import useStyles from "./AppStyle";
 
 function App() {  
@@ -62,7 +62,7 @@ function App() {
 			field: "link",
 			filterPlaceholder: "Link",
 			emptyValue: "Unknown",
-			render: (rowData) => <a className={classes.link} href={rowData.link} rel="noopener noreferrer">{rowData.link}</a>
+			render: (rowData) => <a className={classes.link} href={rowData.link} target="_blank" rel="noopener noreferrer">{rowData.link}</a>
 		}
 	];
 
@@ -86,23 +86,12 @@ function App() {
 
 	const handleGenreChange = (newGenre) => {
 		setSelectedGenre(newGenre);
-		searchMovies("", 0, newGenre);
+		searchMovies(keyword, 0, newGenre);
 	};
 
 	// Error snackbar at the bottom
 	let [showAlert, setShowAlert] = useState(false);
 	let [alertText, setAlertText] = useState("");
-
-	// Tabs index
-	const [selectedTab, setselectedTab] = useState(0);
-	const handleTabChange = (event, newValue) => {
-		setselectedTab(newValue);
-		setSelectedGenre(0);
-		setTableData([]);
-		getGenres();
-		setIndex(0);
-		setTotalResults(0);
-	};
 
 	// Handle page input change. New index is human-readable (starts from 1)
 	const handleIndexChange = (newIndex) => {
@@ -125,7 +114,15 @@ function App() {
 	// Fetch request to retrieve results
 	const searchMovies = (key, pageNumber, genre) => {
 		setIsLoading(true);
-		let query = genre !== 0 ? "genre:" + genre : key;
+		
+		let query;
+		if (genre !== 0 && key) {
+			query = key + " AND genre=" + genre;
+		} else if (key) {
+			query = key;
+		} else {
+			query = "genre:" + genre;
+		}
 
 		if (key.length === 0 && !genre) {
 			setTableData([]);
@@ -149,6 +146,9 @@ function App() {
 		}
 	};
 
+	// Populate genres at page load
+	useEffect(() => {getGenres();}, []);
+
 	return (
 		<div className={classes.margin20}>
 			<div className={classes.dispFlex}>
@@ -156,34 +156,7 @@ function App() {
 				<marquee scrolldelay="10" truespeed="true" behavior="slide"><Typography variant="h1" color="primary">IR project - movie search</Typography></marquee>
 			</div>
 
-			<Tabs
-				value={selectedTab}
-				indicatorColor="primary"
-				textColor="primary"
-				onChange={handleTabChange}
-			>
-				<Tab label="Search" />
-				<Tab label="Browse" />
-			</Tabs>
-
-			{ selectedTab === 0 ? (
-				<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(keyword, 0, 0);}}>
-					<TextField 
-						fullWidth 
-						label="Search by title, genre, description or year" 
-						variant="outlined" 
-						onChange={(e) => {setKeyword(e.target.value);}}
-					/>
-					<Button 
-						variant="contained" 
-						color="primary"
-						className={classes.margin20}
-						onClick={() => {searchMovies(keyword, index, 0);}}
-					>
-						Search <Search />
-					</Button>
-				</form>
-			) : (
+			<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(keyword, 0, selectedGenre);}}>
 				<FormControl className={classes.margin20}>
 					<InputLabel>Genre</InputLabel>
 					<Select
@@ -191,12 +164,28 @@ function App() {
 						autoWidth
 						onChange={(e) => handleGenreChange(e.target.value)}
 					>
-						<MenuItem value="0">Choose...</MenuItem>
+						<MenuItem value="0">All genres</MenuItem>
 						{genres ? genres.map((el) => <MenuItem key={el} value={el}>{el}</MenuItem>) : null}
 					</Select>
 				</FormControl>
-			)}
-
+				
+				<TextField 
+					fullWidth 
+					label="Search by title, description or year" 
+					variant="outlined" 
+					onChange={(e) => {setKeyword(e.target.value);}}
+				/>
+				
+				<Button 
+					variant="contained" 
+					color="primary"
+					className={classes.margin20}
+					onClick={() => {searchMovies(keyword, index, selectedGenre);}}
+				>
+					Search <Search />
+				</Button>
+			</form>
+			
 			<MaterialTable
 				columns={columns}				
 				isLoading={isLoading}

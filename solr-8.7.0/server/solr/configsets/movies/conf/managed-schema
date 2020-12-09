@@ -87,7 +87,7 @@
 
     <!-- General search stuff (with only some fields)-->
     <field name="_text_" type="text_general" indexed="true" stored="false" multiValued="false"/>
-    <copyField source="title, year, genre, description" dest="_text_"/>
+    <copyField source="title, year, description" dest="_text_"/>
 
     <!-- Field to use to determine and enforce document uniqueness.
       Unless this field is marked with required="false", it will be a required field
