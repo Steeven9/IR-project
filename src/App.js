@@ -60,7 +60,7 @@ function App() {
 		{
 			title: "Link",
 			field: "link",
-			filtering: false,
+			filterPlaceholder: "Link",
 			emptyValue: "Unknown",
 			render: (rowData) => <a className={classes.link} href={rowData.link} rel="noopener noreferrer">{rowData.link}</a>
 		}
@@ -104,6 +104,13 @@ function App() {
 		setTotalResults(0);
 	};
 
+	// Handle page input change. New index is human-readable (starts from 1)
+	const handleIndexChange = (newIndex) => {
+		if (!isNaN(newIndex) && newIndex >= 1 && newIndex <= Math.ceil(totalResults / NUM_PER_PAGE) - 1) {
+			searchMovies(keyword, newIndex - 1, selectedGenre);
+		}
+	};
+
 	// Fetch request to retrieve genres list
 	const getGenres = () => Axios.get("/solr/movies/genres")
 		.then((res) => {
@@ -118,7 +125,7 @@ function App() {
 	// Fetch request to retrieve results
 	const searchMovies = (key, pageNumber, genre) => {
 		setIsLoading(true);
-		let query = genre !== 0 ? "genre:" + genre : "*" + key + "*";
+		let query = genre !== 0 ? "genre:" + genre : key;
 
 		if (key.length === 0 && !genre) {
 			setTableData([]);
@@ -163,7 +170,7 @@ function App() {
 				<form noValidate autoComplete="off" className={classes.marginVert20 + " " + classes.dispFlex} onSubmit={(evt) => {evt.preventDefault(); searchMovies(keyword, 0, 0);}}>
 					<TextField 
 						fullWidth 
-						label="Search by title, genre, year, ..." 
+						label="Search by title, genre, description or year" 
 						variant="outlined" 
 						onChange={(e) => {setKeyword(e.target.value);}}
 					/>
@@ -215,7 +222,7 @@ function App() {
 										value={index + 1} 
 										inputProps={{style: { textAlign: "center" }}}
 										className={classes.marginSide20} 
-										onChange={(e) => {searchMovies(keyword, e.target.value - 1, selectedGenre);}}
+										onChange={(e) => {handleIndexChange(e.target.value);}}
 									/> 
 									<Typography> of {Math.ceil(totalResults / NUM_PER_PAGE)}</Typography>
 								</>)}
