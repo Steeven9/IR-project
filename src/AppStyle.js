@@ -4,7 +4,8 @@ import theme from "./AppTheme";
 const useStyles = makeStyles({
 	dispFlex: {
 		display: "flex",
-		alignItems: "center"
+		alignItems: "center",
+		justifyContent: "space-around"
 	},
 	margin20: {
 		margin: "20px"
@@ -25,6 +26,12 @@ const useStyles = makeStyles({
 	},
 	alignCenter: {
 		textAlign: "center"
+	},
+	width80: {
+		width: "80%"
+	},
+	iconSpace: {
+		marginLeft: "5px"
 	}
 });
 

@@ -101,9 +101,16 @@ function App() {
 	};
 
 	// Fetch request to retrieve genres list
-	const getGenres = () => Axios.get("/solr/movies/genres")
+	const getGenres = () => Axios.get("/solr/movies/genres?q=*:*")
 		.then((res) => {
-			setGenres(res.data.facet_counts.facet_fields.genre.filter((el) => el !== 0));
+			let arr = res.data.facet_counts.facet_fields.genre;
+			let newArr = [];
+			
+			for (let i = 0; i < arr.length; i += 2) {
+				newArr.push({ name: arr[i], count: arr[i + 1]});
+			}
+
+			setGenres(newArr);
 		})
 		.catch((e) => {
 			console.error(e);
@@ -165,12 +172,12 @@ function App() {
 						onChange={(e) => handleGenreChange(e.target.value)}
 					>
 						<MenuItem value="0">All genres</MenuItem>
-						{genres ? genres.map((el) => <MenuItem key={el} value={el}>{el}</MenuItem>) : null}
+						{genres ? genres.map((el) => <MenuItem key={el.name} value={el.name}>{el.name + " (" + el.count + ")"}</MenuItem>) : null}
 					</Select>
 				</FormControl>
 				
 				<TextField 
-					fullWidth 
+					className={classes.width80} 
 					label="Search by title, description or year" 
 					variant="outlined" 
 					onChange={(e) => {setKeyword(e.target.value);}}
@@ -182,7 +189,7 @@ function App() {
 					className={classes.margin20}
 					onClick={() => {searchMovies(keyword, index, selectedGenre);}}
 				>
-					Search <Search />
+					Search <Search className={classes.iconSpace}/>
 				</Button>
 			</form>
 			

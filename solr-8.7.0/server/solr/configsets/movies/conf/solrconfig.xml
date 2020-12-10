@@ -178,10 +178,9 @@
   <!-- A request handler to get only the list of genres -->
   <requestHandler name="/genres" class="solr.SearchHandler">
     <lst name="defaults">
-      <str name="df">genre</str>
-      <str name="fl">genre</str>
       <str name="facet">on</str>
       <str name="facet.field">genre</str>
+      <str name="facet.sort">index</str>
     </lst>
   </requestHandler>
 
