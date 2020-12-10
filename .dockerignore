@@ -2,4 +2,5 @@ node_modules/
 .git/
 crawler/
 data/
+docs/
 solr-8.7.0/
