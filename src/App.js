@@ -123,12 +123,18 @@ function App() {
 		setIsLoading(true);
 		
 		let query;
-		if (genre !== 0 && key) {
-			query = key + " AND genre=" + genre;
-		} else if (key) {
-			query = key;
+		if (genre.toString() !== "0") {
+			if (key) {
+				query = key + " AND genre=" + genre;
+			} else {
+				query = "genre:" + genre;
+			}			
 		} else {
-			query = "genre:" + genre;
+			if (key) {
+				query = key;
+			} else {
+				query = "*";
+			}
 		}
 
 		if (key.length === 0 && !genre) {

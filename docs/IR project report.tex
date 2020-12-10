@@ -69,7 +69,7 @@ provide an interface for searching movies by title, browsing, and presenting the
 	
 	\subsection{Docker}
 	
-		Probably too much time has been put into this completely not required part, but I really like dockerizing applications. For this project, two containers were necessary, one for each of the components mentioned earlier. The configuration for the frontend was quite straightforward, since containerizing frontends is a quite common practice, especially for React apps. Luckily I found out that Solr already has an official image (\url{https://hub.docker.com/_/solr}), but the setup was quite the journey. I had to copy the configset to the container through Docker volumes and have it run some script on startup to correctly create the node. Then, as instructed in the \texttt{README}, the user must execute a command to index their data. Not the prettiest solution, but I think it's a good compromise between a premade solution and user input. Of course, running the project in a Docker environment added the challenge of networking due to different hostnames, requiring an additional proxy on the client side to detect if the UI is running on bare metal or in a container, thus proxying the requests respectively to \texttt{localhost} or \texttt{ir-project\_solr} (aka the Solr container).
+		Probably too much time has been put into this completely not required part, but I really like dockerizing applications. For this project, two containers were necessary, one for each of the components mentioned earlier. The configuration for the frontend was quite straightforward, since containerizing frontends is a quite common practice, especially for React apps. Luckily I found out that Solr already has an official image, but the setup was quite the journey. I had to copy the configset to the container through Docker volumes and have it run some script on startup to correctly create the node. Then, as instructed in the \texttt{README}, the user must execute a command to index their data. Not the prettiest solution, but I think it's a good compromise between a premade solution and user input. Of course, running the project in a Docker environment added the challenge of networking due to different hostnames, requiring an additional proxy on the client side to detect if the UI is running on bare metal or in a container, thus proxying the requests respectively to \texttt{localhost} or \texttt{ir-project\_solr} (aka the Solr container).
 		
 		\begin{figure}[H]
 			\centering
@@ -155,7 +155,19 @@ provide an interface for searching movies by title, browsing, and presenting the
 
 	GitHub repository: \url{https://github.com/Steeven9/IR-project}\\
 	
-	Docker repository: \url{https://hub.docker.com/repository/docker/steeven9/ir-project}	
+	Docker repository: \url{https://hub.docker.com/repository/docker/steeven9/ir-project}\\
+	
+	Official Solr image: \url{https://hub.docker.com/_/solr}\\
+	
+	Scrapy documentation: \url{https://docs.scrapy.org/en/latest}\\
+	
+	React documentation: \url{https://reactjs.org/docs/getting-started.html}\\
+	
+	Material-UI documentation: \url{https://material-ui.com/getting-started/installation}\\
+	
+	Docker documentation: \url{https://docs.docker.com}\\
+	
+	Solr documentation: \url{https://lucene.apache.org/solr/guide/8_7}
 	
 
 \end{document}
