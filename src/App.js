@@ -125,7 +125,7 @@ function App() {
 		let query;
 		if (genre.toString() !== "0") {
 			if (key) {
-				query = key + " AND genre=" + genre;
+				query = key + " AND genre:" + genre;
 			} else {
 				query = "genre:" + genre;
 			}			
@@ -143,7 +143,7 @@ function App() {
 			setIndex(0);
 			setTotalResults(0);
 		} else if (pageNumber >= 0) {
-			Axios.get("/solr/movies/select?q=" + query + "&sort=title%20asc&start=" + (NUM_PER_PAGE * pageNumber))
+			Axios.get("/solr/movies/select?q=" + query + "&start=" + (NUM_PER_PAGE * pageNumber))
 				.then((res) => {
 					setTableData(res.data.response.docs);
 					setTotalResults(res.data.response.numFound);
